@@ -1,0 +1,6 @@
+library(cluster)
+iris2 = matrix(c(t(iris[sample(nrow(iris)),1:4])), nrow = 150, ncol = 4, byrow = TRUE)
+colnames(iris2) <- c("Sepal.length","Sepal.width","Petal.length","Petal.width")
+km = kmeans(iris2, 3)
+pairs(iris2,col = km$cluster, pch = km$cluster)
+clusplot(iris2, km$cluster, color = TRUE, shade = TRUE)
