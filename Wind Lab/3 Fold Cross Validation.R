@@ -1,8 +1,11 @@
 library("neuralnet")
 
-for(i in 0:2){
-  testing_range = c(1:4633) + i*4633
-  windData = read.csv("windCleanedH.csv",TRUE)
+k = 3
+n_testcase = 0
+error_sum = 0
+windData = read.csv("windCleanedH.csv",TRUE)
+for(i in 0:(k-1)){
+  testing_range = c(1:(nrow(windData)%/%k)) + i * (nrow(windData)%/%k)
   trainingData = windData[-testing_range,c("POWER","WIND_SPEED", "WIND_MOV","SPD_MOV","HOUR_TIME","MIN_TIME")]
   testingData = windData[testing_range,c("POWER","WIND_SPEED", "WIND_MOV","SPD_MOV","HOUR_TIME","MIN_TIME")]
   trainingData$POWER = sqrt(trainingData$POWER)
@@ -81,5 +84,9 @@ for(i in 0:2){
   colnames(predictData) = c("POWER","WIND_SPEED")
   points(testingData$WIND_SPEED,testingData$POWER,col="red")
   points(predictData$WIND_SPEED,predictData$POWER,col="green")
-  print(paste("Predict MAPE :",sum(abs((predictData$POWER^2 - testingData$POWER^2)/testingData$POWER^2))/nrow(testingData)))
+  #print(paste("Predict MAPE :",sum(abs((predictData$POWER^2 - testingData$POWER^2)/testingData$POWER^2))/nrow(testingData)))
+  error_sum = error_sum + sum(abs((predictData$POWER^2 - testingData$POWER^2)/testingData$POWER^2))
+  n_testcase = n_testcase + nrow(testingData)
 }
+mape = error_sum / n_testcase
+print(paste("Predict MAPE :",mape))
